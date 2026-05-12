@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Policy Signals &amp; Nonprofit Revenue</title>
+<style>
+  :root {
+    --primary: #1a365d;
+    --accent: #2b6cb0;
+    --accent-light: #ebf4ff;
+    --carrot: #2f855a;
+    --carrot-bg: #f0fff4;
+    --stick: #c53030;
+    --stick-bg: #fff5f5;
+    --mediator: #6b46c1;
+    --mediator-bg: #faf5ff;
+    --gray-50: #f7fafc;
+    --gray-100: #edf2f7;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e0;
+    --gray-500: #718096;
+    --gray-700: #4a5568;
+    --gray-800: #2d3748;
+    --gray-900: #1a202c;
+    --sig-star: #d69e2e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--gray-800);
+    line-height: 1.6;
+    background: #fff;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    color: #fff;
+    padding: 5rem 2rem 4rem;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    max-width: 800px;
+    margin: 0 auto 1rem;
+    line-height: 1.25;
+  }
+  .hero .subtitle {
+    font-size: 1.15rem;
+    opacity: 0.88;
+    max-width: 640px;
+    margin: 0 auto 2rem;
+    font-weight: 300;
+  }
+  .hero .badges {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .hero .badge {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 999px;
+    padding: 0.4rem 1.2rem;
+    font-size: 0.85rem;
+    backdrop-filter: blur(4px);
+  }
+
+  /* ── Navigation ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #fff;
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0;
+  }
+  nav ul {
+    list-style: none;
+    display: flex;
+    max-width: 1100px;
+    margin: 0 auto;
+    overflow-x: auto;
+  }
+  nav a {
+    display: block;
+    padding: 0.85rem 1.3rem;
+    text-decoration: none;
+    color: var(--gray-700);
+    font-size: 0.88rem;
+    font-weight: 500;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  nav a:hover, nav a.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* ── Layout ── */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  section {
+    padding: 4rem 0;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  section:last-child { border-bottom: none; }
+
+  h2 {
+    font-size: 1.8rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+  }
+  h3 {
+    font-size: 1.25rem;
+    color: var(--gray-800);
+    margin: 2rem 0 0.75rem;
+  }
+  h2 .section-num {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+  }
+  p { margin-bottom: 1rem; color: var(--gray-700); }
+  .lead { font-size: 1.05rem; color: var(--gray-500); margin-bottom: 2rem; }
+
+  /* ── Cards ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+  }
+  .card {
+    background: #fff;
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+  .card h4 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+  .card .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: 0.5rem;
+  }
+  .card p { font-size: 0.92rem; margin-bottom: 0; }
+
+  /* ── Theory cards ── */
+  .theory-card {
+    border-left: 4px solid var(--accent);
+    padding-left: 1.25rem;
+  }
+  .theory-card.carrot { border-left-color: var(--carrot); }
+  .theory-card.stick { border-left-color: var(--stick); }
+  .theory-card.mediator { border-left-color: var(--mediator); }
+
+  /* ── Hypothesis boxes ── */
+  .hyp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+  }
+  @media (max-width: 700px) { .hyp-grid { grid-template-columns: 1fr; } }
+
+  .hyp-group {
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+  .hyp-group.carrot { background: var(--carrot-bg); border: 1px solid #c6f6d5; }
+  .hyp-group.stick { background: var(--stick-bg); border: 1px solid #fed7d7; }
+
+  .hyp-group h4 {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+  .hyp-group.carrot h4 { color: var(--carrot); }
+  .hyp-group.stick h4 { color: var(--stick); }
+
+  .hyp-item {
+    background: rgba(255,255,255,0.7);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.92rem;
+  }
+  .hyp-item:last-child { margin-bottom: 0; }
+  .hyp-label {
+    font-weight: 700;
+    margin-right: 0.25rem;
+  }
+  .hyp-group.carrot .hyp-label { color: var(--carrot); }
+  .hyp-group.stick .hyp-label { color: var(--stick); }
+
+  /* ── Pipeline ── */
+  .pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 2rem 0;
+    position: relative;
+  }
+  .pipe-step {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    position: relative;
+    padding-bottom: 2rem;
+  }
+  .pipe-step:last-child { padding-bottom: 0; }
+  .pipe-marker {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    position: relative;
+    z-index: 2;
+  }
+  .pipe-step:not(:last-child) .pipe-marker::after {
+    content: '';
+    position: absolute;
+    top: 44px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: calc(100% + 2rem - 44px);
+    background: var(--gray-200);
+    z-index: 1;
+  }
+  .pipe-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 22px;
+    top: 44px;
+    width: 2px;
+    height: calc(100% - 44px);
+    background: var(--gray-200);
+  }
+  .pipe-content {
+    flex: 1;
+    padding-top: 0.3rem;
+  }
+  .pipe-content h4 {
+    font-size: 1rem;
+    color: var(--gray-900);
+    margin-bottom: 0.25rem;
+  }
+  .pipe-content p { font-size: 0.9rem; margin-bottom: 0.25rem; }
+  .pipe-n {
+    display: inline-block;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-weight: 700;
+    padding: 0.15rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+  }
+  .pipe-drop {
+    color: var(--stick);
+    font-size: 0.82rem;
+    margin-top: 0.15rem;
+  }
+
+  /* ── Tables ── */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    border-radius: 12px;
+    border: 1px solid var(--gray-200);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  thead th {
+    background: var(--gray-50);
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--gray-700);
+    border-bottom: 2px solid var(--gray-200);
+    white-space: nowrap;
+  }
+  tbody td {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  tbody tr:hover { background: var(--gray-50); }
+  tbody tr:last-child td { border-bottom: none; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; font-family: 'SF Mono', 'Consolas', monospace; font-size: 0.84rem; }
+  .sig { color: var(--sig-star); font-weight: 700; }
+  .var-label { font-weight: 500; }
+
+  /* ── Stat highlight boxes ── */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .stat-box {
+    text-align: center;
+    padding: 1.25rem;
+    background: var(--gray-50);
+    border-radius: 12px;
+    border: 1px solid var(--gray-200);
+  }
+  .stat-box .stat-val {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1.1;
+  }
+  .stat-box .stat-label {
+    font-size: 0.8rem;
+    color: var(--gray-500);
+    margin-top: 0.3rem;
+  }
+
+  /* ── Result highlights ── */
+  .result-card {
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .result-card.finding { background: var(--accent-light); border: 1px solid #bee3f8; }
+  .result-card.null { background: var(--gray-50); border: 1px solid var(--gray-200); }
+  .result-card h4 { font-size: 0.95rem; margin-bottom: 0.5rem; }
+  .result-card p { font-size: 0.9rem; margin-bottom: 0; }
+
+  /* ── Coefficient heatmap ── */
+  .coef-pos { color: var(--carrot); }
+  .coef-neg { color: var(--stick); }
+  .coef-null { color: var(--gray-500); }
+  .row-highlight { background: #fffff0 !important; }
+
+  /* ── Model spec tabs ── */
+  .spec-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  .spec-tab {
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--gray-300);
+    background: #fff;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--gray-700);
+  }
+  .spec-tab.active, .spec-tab:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  /* ── Framework diagram (horizontal L→R) ── */
+  .framework-diagram {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    margin: 2rem 0;
+    overflow-x: auto;
+  }
+  .fw-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    min-width: 820px;
+  }
+  .fw-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+  }
+  .fw-col-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--gray-500);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  .fw-box {
+    padding: 0.9rem 1.3rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    text-align: center;
+    min-width: 150px;
+    position: relative;
+  }
+  .fw-box.signaler { background: #ebf8ff; border: 2px solid #4299e1; color: #2b6cb0; }
+  .fw-box.signal-c { background: var(--carrot-bg); border: 2px solid #48bb78; color: var(--carrot); }
+  .fw-box.signal-s { background: var(--stick-bg); border: 2px solid #fc8181; color: var(--stick); }
+  .fw-box.mediator { background: var(--mediator-bg); border: 2px solid #9f7aea; color: var(--mediator); }
+  .fw-box.outcome { background: #fff; border: 2px solid var(--gray-300); color: var(--gray-700); }
+  .fw-box small { display: block; font-weight: 400; font-size: 0.75rem; margin-top: 0.2rem; opacity: 0.8; }
+
+  /* Arrows between columns */
+  .fw-arrow-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.6rem;
+    flex-shrink: 0;
+    gap: 0.3rem;
+  }
+  .fw-arrow-col .arrow-line {
+    width: 40px;
+    height: 2px;
+    background: var(--gray-300);
+    position: relative;
+  }
+  .fw-arrow-col .arrow-line::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: -4px;
+    border: 5px solid transparent;
+    border-left: 6px solid var(--gray-300);
+  }
+  .fw-arrow-col .arrow-label {
+    font-size: 0.68rem;
+    color: var(--gray-500);
+    white-space: nowrap;
+  }
+
+  /* Dashed path for mediation */
+  .fw-arrow-col .arrow-line.dashed {
+    background: repeating-linear-gradient(90deg, var(--mediator) 0, var(--mediator) 5px, transparent 5px, transparent 9px);
+    height: 2px;
+  }
+  .fw-arrow-col .arrow-line.dashed::after {
+    border-left-color: var(--mediator);
+  }
+
+  /* Vertical connector between signal boxes and mediator */
+  .fw-vconnect {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+  }
+  .fw-vconnect .fw-branch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  /* Hypothesis labels on arrows */
+  .hyp-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .hyp-tag.h1 { background: var(--carrot-bg); color: var(--carrot); }
+  .hyp-tag.h2 { background: var(--stick-bg); color: var(--stick); }
+  .hyp-tag.h3 { background: var(--mediator-bg); color: var(--mediator); }
+
+  /* ── Two-part visual ── */
+  .twopart-visual {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+  }
+  @media (max-width: 700px) { .twopart-visual { grid-template-columns: 1fr; } }
+  .tp-box {
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .tp-box.part1 { background: #ebf8ff; border: 2px solid #90cdf4; }
+  .tp-box.part2 { background: var(--gray-50); border: 2px solid var(--gray-200); }
+  .tp-box h4 { margin-bottom: 0.75rem; }
+  .tp-box .tp-verdict {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0.5rem 0;
+  }
+  .tp-box.part1 .tp-verdict { color: var(--carrot); }
+  .tp-box.part2 .tp-verdict { color: var(--gray-500); }
+
+  /* ── Footer ── */
+  footer {
+    background: var(--gray-900);
+    color: var(--gray-300);
+    padding: 2rem;
+    text-align: center;
+    font-size: 0.85rem;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .hero { padding: 3rem 1.5rem 2.5rem; }
+    .hero h1 { font-size: 1.6rem; }
+    .container { padding: 0 1.25rem; }
+    h2 { font-size: 1.4rem; }
+    .card-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── Smooth scroll ── */
+  html { scroll-behavior: smooth; scroll-padding-top: 60px; }
+
+  /* ── Tooltip for significance ── */
+  .sig-legend {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    color: var(--gray-500);
+    margin: 0.75rem 0;
+    padding: 0.5rem 0;
+    border-top: 1px solid var(--gray-100);
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<header class="hero">
+  <h1>Policy Signals: How Local Governments' Immigration Policies Are Perceived by Nonprofit Stakeholders</h1>
+  <p class="subtitle">Examining whether local immigration policies &mdash; carrots and sticks &mdash; shape donor and stakeholder support for immigrant-serving nonprofits</p>
+  <div class="badges">
+    <span class="badge">N = 1,287 Nonprofits</span>
+    <span class="badge">199 Counties</span>
+    <span class="badge">ICMA Survey + IRS 990</span>
+    <span class="badge">OLS-CR + Two-Part Hurdle</span>
+  </div>
+</header>
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav>
+  <ul>
+    <li><a href="#framework">Framework</a></li>
+    <li><a href="#hypotheses">Hypotheses</a></li>
+    <li><a href="#measurement">Measurement</a></li>
+    <li><a href="#data">Data &amp; Sample</a></li>
+    <li><a href="#descriptives">Descriptives</a></li>
+    <li><a href="#results">Results</a></li>
+    <li><a href="#summary">Summary</a></li>
+    <li><a href="#replication">Replication</a></li>
+  </ul>
+</nav>
+
+<main class="container">
+
+<!-- ═══════════════ 1. RESEARCH QUESTION ═══════════════ -->
+<section id="framework">
+  <h2><span class="section-num">Section 1</span>Research Question &amp; Theoretical Framework</h2>
+  <p class="lead">Do local immigration policy choices affect how community members, donors, and government funders perceive and support immigrant-serving nonprofits?</p>
+
+  <h3>Integrated Theoretical Framework</h3>
+  <p>This study bridges three theoretical traditions to explain how policy signals travel from local governments to nonprofit stakeholders:</p>
+
+  <div class="card-grid">
+    <div class="card theory-card">
+      <h4>Foundation</h4>
+      <div class="card-title">Young's (2000) Government-Nonprofit Relations</div>
+      <p>Establishes three structural modes: <strong>supplementary</strong> (filling gaps), <strong>complementary</strong> (partnering), and <strong>adversarial</strong> (challenging). Explains <em>what</em> relationships look like but not <em>how</em> policies reshape them.</p>
+    </div>
+    <div class="card theory-card">
+      <h4>Behavioral Mechanism</h4>
+      <div class="card-title">Signaling Theory (Spence, 1973; Connelly et al., 2011)</div>
+      <p>Provides the behavioral bridge. Local governments act as <strong>signalers</strong>; immigration policies are <strong>observable signals</strong> that stakeholders decode to update beliefs about the legitimacy of immigrant-serving organizations.</p>
+    </div>
+    <div class="card theory-card">
+      <h4>Signal Content</h4>
+      <div class="card-title">Vedung's (1998) Policy Tool Typology</div>
+      <p>Specifies signal direction: <strong>Carrots</strong> (incentives) signal inclusion and legitimacy. <strong>Sticks</strong> (enforcement) signal restriction and exclusion. Different tools encode fundamentally different messages.</p>
+    </div>
+  </div>
+
+  <h3>Conceptual Model</h3>
+  <div class="framework-diagram">
+    <svg viewBox="0 0 940 360" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:940px;margin:0 auto;display:block;" font-family="'Segoe UI',system-ui,sans-serif">
+      <defs>
+        <marker id="ah" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#a0aec0"/></marker>
+        <marker id="ah-green" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#48bb78"/></marker>
+        <marker id="ah-red" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#fc8181"/></marker>
+        <marker id="ah-purple" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#9f7aea"/></marker>
+      </defs>
+
+      <!-- ── Col 1: Local Government ── -->
+      <text x="80" y="100" text-anchor="middle" font-size="9" fill="#718096" letter-spacing="1.5">SIGNALER</text>
+      <rect x="15" y="110" width="130" height="80" rx="10" fill="#ebf8ff" stroke="#4299e1" stroke-width="2"/>
+      <text x="80" y="142" text-anchor="middle" font-weight="700" font-size="13" fill="#2b6cb0">Local Government</text>
+      <text x="80" y="159" text-anchor="middle" font-size="10" fill="#4a90d9" opacity="0.8">Policy Choices</text>
+      <line x1="145" y1="135" x2="200" y2="90" stroke="#a0aec0" stroke-width="1.5" marker-end="url(#ah)"/>
+      <line x1="145" y1="170" x2="200" y2="200" stroke="#a0aec0" stroke-width="1.5" marker-end="url(#ah)"/>
+      <text x="172" y="120" text-anchor="middle" font-size="9" fill="#718096">signals</text>
+
+      <!-- ── Col 2: Policy Tools ── -->
+      <text x="272" y="40" text-anchor="middle" font-size="9" fill="#718096" letter-spacing="1.5">POLICY TOOLS</text>
+      <rect x="205" y="55" width="135" height="68" rx="10" fill="#f0fff4" stroke="#48bb78" stroke-width="2"/>
+      <text x="272" y="79" text-anchor="middle" font-weight="700" font-size="13" fill="#2f855a">Carrots</text>
+      <text x="272" y="95" text-anchor="middle" font-size="10" fill="#38a169">Immigrant Support</text>
+      <text x="272" y="110" text-anchor="middle" font-size="10" fill="#38a169">Economic Support</text>
+
+      <rect x="205" y="175" width="135" height="58" rx="10" fill="#fff5f5" stroke="#fc8181" stroke-width="2"/>
+      <text x="272" y="200" text-anchor="middle" font-weight="700" font-size="13" fill="#c53030">Sticks</text>
+      <text x="272" y="217" text-anchor="middle" font-size="10" fill="#e53e3e">Enforcement</text>
+
+      <!-- ── Col 3: Three DVs ── -->
+      <text x="490" y="22" text-anchor="middle" font-size="9" fill="#718096" letter-spacing="1.5">REVENUE OUTCOMES (DVs)</text>
+
+      <rect x="415" y="35" width="150" height="50" rx="10" fill="#fff" stroke="#cbd5e0" stroke-width="2"/>
+      <text x="490" y="56" text-anchor="middle" font-weight="600" font-size="12" fill="#4a5568">Private Donations</text>
+      <text x="490" y="72" text-anchor="middle" font-size="9" fill="#a0aec0">Line 1h − 1e</text>
+
+      <rect x="415" y="105" width="150" height="50" rx="10" fill="#fff" stroke="#cbd5e0" stroke-width="2"/>
+      <text x="490" y="126" text-anchor="middle" font-weight="600" font-size="12" fill="#4a5568">Government Grants</text>
+      <text x="490" y="142" text-anchor="middle" font-size="9" fill="#a0aec0">GOVGRANTS</text>
+
+      <rect x="415" y="175" width="150" height="50" rx="10" fill="#fff" stroke="#cbd5e0" stroke-width="2"/>
+      <text x="490" y="196" text-anchor="middle" font-weight="600" font-size="12" fill="#4a5568">Program Service Rev</text>
+      <text x="490" y="212" text-anchor="middle" font-size="9" fill="#a0aec0">Line 2g</text>
+
+      <!-- ── H1: Carrots → 3 DVs ── -->
+      <line x1="340" y1="75" x2="413" y2="55" stroke="#48bb78" stroke-width="1.5" marker-end="url(#ah-green)"/>
+      <rect x="355" y="44" width="32" height="14" rx="3" fill="#f0fff4"/>
+      <text x="371" y="55" text-anchor="middle" font-size="9" font-weight="700" fill="#2f855a">H1b</text>
+
+      <line x1="340" y1="89" x2="413" y2="124" stroke="#48bb78" stroke-width="1.5" marker-end="url(#ah-green)"/>
+      <rect x="355" y="98" width="32" height="14" rx="3" fill="#f0fff4"/>
+      <text x="371" y="109" text-anchor="middle" font-size="9" font-weight="700" fill="#2f855a">H1a</text>
+
+      <line x1="340" y1="105" x2="413" y2="194" stroke="#48bb78" stroke-width="1.5" marker-end="url(#ah-green)"/>
+      <rect x="355" y="148" width="32" height="14" rx="3" fill="#f0fff4"/>
+      <text x="371" y="159" text-anchor="middle" font-size="9" font-weight="700" fill="#2f855a">H1c</text>
+
+      <!-- ── H2: Sticks → 3 DVs ── -->
+      <line x1="340" y1="190" x2="413" y2="65" stroke="#fc8181" stroke-width="1.5" marker-end="url(#ah-red)"/>
+      <rect x="383" y="115" width="32" height="14" rx="3" fill="#fff5f5"/>
+      <text x="399" y="126" text-anchor="middle" font-size="9" font-weight="700" fill="#c53030">H2b</text>
+
+      <line x1="340" y1="204" x2="413" y2="132" stroke="#fc8181" stroke-width="1.5" marker-end="url(#ah-red)"/>
+      <rect x="383" y="155" width="32" height="14" rx="3" fill="#fff5f5"/>
+      <text x="399" y="166" text-anchor="middle" font-size="9" font-weight="700" fill="#c53030">H2a</text>
+
+      <line x1="340" y1="218" x2="413" y2="200" stroke="#fc8181" stroke-width="1.5" marker-end="url(#ah-red)"/>
+      <rect x="383" y="206" width="32" height="14" rx="3" fill="#fff5f5"/>
+      <text x="399" y="217" text-anchor="middle" font-size="9" font-weight="700" fill="#c53030">H2c</text>
+
+      <!-- ── Col 4: NPO Provider Role ── -->
+      <text x="780" y="22" text-anchor="middle" font-size="9" fill="#718096" letter-spacing="1.5">CONTEXTUAL FACTOR</text>
+      <rect x="660" y="35" width="240" height="190" rx="12" fill="#faf5ff" stroke="#9f7aea" stroke-width="2"/>
+      <text x="780" y="78" text-anchor="middle" font-weight="700" font-size="14" fill="#6b46c1">Perceived NPO's Role</text>
+      <text x="780" y="98" text-anchor="middle" font-size="10" fill="#9f7aea" opacity="0.85">Primary service provider</text>
+      <text x="780" y="114" text-anchor="middle" font-size="10" fill="#9f7aea" opacity="0.85">across 5 service categories</text>
+      <line x1="690" y1="135" x2="870" y2="135" stroke="#d6bcfa" stroke-width="1" stroke-dasharray="3,3"/>
+      <text x="780" y="155" text-anchor="middle" font-size="10" font-weight="700" fill="#6b46c1">Direct Effects</text>
+      <text x="780" y="170" text-anchor="middle" font-size="9" fill="#9f7aea">H3a · H3b · H3c</text>
+      <text x="780" y="194" text-anchor="middle" font-size="10" font-weight="700" fill="#6b46c1">Moderator</text>
+      <text x="780" y="209" text-anchor="middle" font-size="9" fill="#9f7aea">H4a · H4b · H4c</text>
+
+      <!-- ── H3: NPO → 3 DVs ── -->
+      <line x1="660" y1="60" x2="568" y2="60" stroke="#9f7aea" stroke-width="1.8" marker-end="url(#ah-purple)"/>
+      <rect x="600" y="48" width="32" height="14" rx="3" fill="#faf5ff"/>
+      <text x="616" y="59" text-anchor="middle" font-size="9" font-weight="700" fill="#6b46c1">H3a</text>
+
+      <line x1="660" y1="130" x2="568" y2="130" stroke="#9f7aea" stroke-width="1.8" marker-end="url(#ah-purple)"/>
+      <rect x="600" y="118" width="32" height="14" rx="3" fill="#faf5ff"/>
+      <text x="616" y="129" text-anchor="middle" font-size="9" font-weight="700" fill="#6b46c1">H3b</text>
+
+      <line x1="660" y1="200" x2="568" y2="200" stroke="#9f7aea" stroke-width="1.8" marker-end="url(#ah-purple)"/>
+      <rect x="600" y="188" width="32" height="14" rx="3" fill="#faf5ff"/>
+      <text x="616" y="199" text-anchor="middle" font-size="9" font-weight="700" fill="#6b46c1">H3c</text>
+
+      <!-- ── H4: Moderation pathway (dashed arrow from NPO back to policy paths) ── -->
+      <text x="490" y="270" text-anchor="middle" font-size="9" fill="#718096" letter-spacing="1.5">MODERATION PATHWAY</text>
+      <path d="M780,225 Q780,295 380,295 Q272,295 272,235" fill="none" stroke="#9f7aea" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.65" marker-end="url(#ah-purple)"/>
+      <rect x="442" y="300" width="96" height="20" rx="4" fill="#faf5ff" stroke="#9f7aea" stroke-width="0.5"/>
+      <text x="490" y="314" text-anchor="middle" font-size="10" font-weight="700" fill="#6b46c1">H4a · H4b · H4c</text>
+      <text x="490" y="338" text-anchor="middle" font-size="9" fill="#9f7aea" opacity="0.8">NPO's role moderates Policy → DV paths</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ═══════════════ 2. HYPOTHESES ═══════════════ -->
+<section id="hypotheses">
+  <h2><span class="section-num">Section 2</span>Research Hypotheses</h2>
+  <p class="lead">Twelve directional hypotheses derived from the signaling framework: direct effects of policy tools (H1, H2) and the perceived NPO's role (H3), plus moderation by the NPO's role (H4).</p>
+
+  <div class="hyp-grid">
+    <div class="hyp-group carrot">
+      <h4>&#x1f955; Carrot Policies (Inclusion &amp; Legitimacy)</h4>
+      <div class="hyp-item">
+        <span class="hyp-label">H1a:</span> Carrot policies are <strong>positively</strong> associated with <strong>government grants</strong> to immigrant-serving nonprofits.
+      </div>
+      <div class="hyp-item">
+        <span class="hyp-label">H1b:</span> Carrot policies are <strong>negatively</strong> associated with <strong>private donations</strong> (crowding-out).
+      </div>
+      <div class="hyp-item">
+        <span class="hyp-label">H1c:</span> Carrot policies are <strong>negatively</strong> associated with <strong>program service revenue</strong> (reduced fee demand).
+      </div>
+    </div>
+
+    <div class="hyp-group stick">
+      <h4>&#x1faa8; Stick Policies (Threat &amp; Urgency)</h4>
+      <div class="hyp-item">
+        <span class="hyp-label">H2a:</span> Stick policies are <strong>negatively</strong> associated with <strong>government grants</strong> (adversarial defunding).
+      </div>
+      <div class="hyp-item">
+        <span class="hyp-label">H2b:</span> Stick policies are <strong>positively</strong> associated with <strong>private donations</strong> (backlash / rage giving).
+      </div>
+      <div class="hyp-item">
+        <span class="hyp-label">H2c:</span> Stick policies are <strong>positively</strong> associated with <strong>program service revenue</strong> (heightened demand).
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:1.5rem;">
+    <div class="hyp-group" style="background:var(--mediator-bg);border:1px solid #d6bcfa;border-radius:12px;padding:1.5rem;">
+      <h4 style="color:var(--mediator);display:inline-flex;align-items:center;gap:0.5rem;font-size:1rem;margin-bottom:1rem;">&#x1f3db;&#xfe0f; Direct Effects of Perceived NPO's Role</h4>
+      <p style="font-size:0.9rem;color:var(--gray-700);margin-bottom:1rem;">Where nonprofits are recognized as primary providers of immigrant services, their structural visibility shapes revenue patterns independent of policy signals.</p>
+      <div class="hyp-item">
+        <span class="hyp-label" style="color:var(--mediator);">H3a:</span> Perceived NPO's role is <strong>positively</strong> associated with <strong>private donations</strong> (centrality cues donor support).
+      </div>
+      <div class="hyp-item">
+        <span class="hyp-label" style="color:var(--mediator);">H3b:</span> Perceived NPO's role is <strong>positively</strong> associated with <strong>government grants</strong> (NPO centrality opens partnership channels).
+      </div>
+      <div class="hyp-item">
+        <span class="hyp-label" style="color:var(--mediator);">H3c:</span> Perceived NPO's role is <strong>negatively</strong> associated with <strong>program service revenue</strong> (substitution away from fees).
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:1.5rem;">
+    <div class="hyp-group" style="background:var(--mediator-bg);border:1px dashed #b794f4;border-radius:12px;padding:1.5rem;">
+      <h4 style="color:var(--mediator);display:inline-flex;align-items:center;gap:0.5rem;font-size:1rem;margin-bottom:1rem;">&#x1f517; Moderation by Perceived NPO's Role</h4>
+      <p style="font-size:0.9rem;color:var(--gray-700);margin-bottom:1rem;">Policy signals do not operate in a vacuum: their interpretation depends on whether NPOs serve as the salient organizational target. Where NPOs are primary providers, abstract policy signals are translated into concrete signals about NPO support or NPO threat.</p>
+      <div class="hyp-item">
+        <span class="hyp-label" style="color:var(--mediator);">H4a:</span> Perceived NPO's role <strong>moderates</strong> the relationship between immigration policies and <strong>private donations</strong>.
+      </div>
+      <div class="hyp-item">
+        <span class="hyp-label" style="color:var(--mediator);">H4b:</span> Perceived NPO's role <strong>moderates</strong> the relationship between immigration policies and <strong>government grants</strong>.
+      </div>
+      <div class="hyp-item">
+        <span class="hyp-label" style="color:var(--mediator);">H4c:</span> Perceived NPO's role <strong>moderates</strong> the relationship between immigration policies and <strong>program service revenue</strong>.
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--accent-light);border:1px solid #bee3f8;border-radius:10px;padding:1.25rem;margin-top:1.5rem;">
+    <h4 style="font-size:0.9rem;color:var(--accent);margin-bottom:0.5rem;">Three Dependent Variables, Three Stakeholder Mechanisms</h4>
+    <p style="font-size:0.88rem;margin-bottom:0.5rem;">Each DV is tied to a distinct stakeholder mechanism:</p>
+    <p style="font-size:0.88rem;margin-bottom:0;">
+      <strong>1. Private Donations</strong> &mdash; community / donor support (Form 990 Line 1h − Line 1e)<br>
+      <strong>2. Government Grants</strong> &mdash; public-sector partnership (GOVGRANTS field)<br>
+      <strong>3. Program Service Revenue</strong> &mdash; service demand and earned income (Form 990 Line 2g)
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════ 2B. MEASUREMENT ═══════════════ -->
+<section id="measurement">
+  <h2><span class="section-num">Section 3</span>Variable Measurement</h2>
+  <p class="lead">All policy variables are drawn from the 2018 ICMA Local Government and Immigrant Communities Survey. Revenue variables come from 2019 IRS Form 990 E-filer data.</p>
+
+  <!-- ── Dependent Variables ── -->
+  <h3>Dependent Variables (IRS Form 990)</h3>
+  <p style="font-size:0.9rem;color:var(--gray-700);">Three dependent variables capture distinct dimensions of nonprofit revenue, each tied to a different stakeholder mechanism: <strong>donations</strong> (community support), <strong>grants</strong> (public-sector support), and <strong>program revenue</strong> (service demand).</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Variable</th><th>Source</th><th>Operationalization</th><th>Transformation</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="var-label">Private Donations</td>
+          <td>Form 990, Part VIII Line 1h − Line 1e</td>
+          <td>Total contributions minus government grants. Captures community / donor support. Only 1.4% report zero in the trimmed sample.</td>
+          <td>ln(x + 1)</td>
+        </tr>
+        <tr>
+          <td class="var-label">Government Grants</td>
+          <td>Form 990, GOVGRANTS field (Line 1e)</td>
+          <td>Reported government grant revenue. Captures public-sector partnership support. 57.0% of nonprofits report zero, motivating two-part hurdle specification.</td>
+          <td>ln(x + 1); Hurdle</td>
+        </tr>
+        <tr>
+          <td class="var-label">Program Service Revenue</td>
+          <td>Form 990, Part VIII Line 2g</td>
+          <td>Fees, service contracts, and earned income from mission-related activities. Captures service demand. 49.7% report zero.</td>
+          <td>ln(x + 1); Hurdle</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── Immigrant Support Index ── -->
+  <h3>Independent Variable: Immigrant Support Index (Carrot)</h3>
+  <p>Additive index of 8 binary items from ICMA Q5: "Does your jurisdiction provide the following services or activities for immigrants?"</p>
+  <p style="font-size:0.88rem;color:var(--gray-500);">Coding: 1 = Yes, 0 = No or Don't Know. Index computed only for respondents answering &ge;4 of 8 items. Range: 0&ndash;8.</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Item</th><th>ICMA Code</th><th>Survey Question</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Q5a</td><td>Providing multilingual access to community information (e.g., translated documents, multilingual website)</td></tr>
+        <tr><td>2</td><td>Q5b</td><td>Establishing a local immigrant affairs commission or task force</td></tr>
+        <tr><td>3</td><td>Q5c</td><td>Providing community-based citizenship assistance or naturalization programs</td></tr>
+        <tr><td>4</td><td>Q5d</td><td>Issuing municipal identification cards to residents regardless of immigration status</td></tr>
+        <tr><td>5</td><td>Q5e</td><td>Supporting immigrant entrepreneurship or microenterprise development programs</td></tr>
+        <tr><td>6</td><td>Q5f</td><td>Offering cultural competency or diversity training for government employees</td></tr>
+        <tr><td>7</td><td>Q5g</td><td>Providing interpreter or translation services in government offices</td></tr>
+        <tr><td>8</td><td>Q5h</td><td>Facilitating access to English language learning (ESL/ESOL) programs</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── Economic Support Index ── -->
+  <h3>Independent Variable: Economic Support Index (Carrot)</h3>
+  <p>Additive index of 4 binary items from ICMA Q10: "Does your jurisdiction offer economic programs that benefit immigrants?"</p>
+  <p style="font-size:0.88rem;color:var(--gray-500);">Coding: 1 = Yes, 0 = No or Don't Know. Index computed for respondents answering &ge;2 of 4 items. Range: 0&ndash;4.</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Item</th><th>ICMA Code</th><th>Survey Question</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Q10a</td><td>Fostering immigrant entrepreneurship (e.g., business incubators, technical assistance)</td></tr>
+        <tr><td>2</td><td>Q10b</td><td>Providing micro-financing or small business loan programs for immigrants</td></tr>
+        <tr><td>3</td><td>Q10c</td><td>Offering workforce development or job training programs targeted at immigrants</td></tr>
+        <tr><td>4</td><td>Q10d</td><td>Supporting financial literacy or banking access programs for immigrant communities</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── Enforcement ── -->
+  <h3>Independent Variable: Enforcement (Stick)</h3>
+  <p>Binary indicator derived from 5 items in ICMA Q14: "Has your jurisdiction enacted any of the following enforcement measures regarding unauthorized immigrants?"</p>
+  <p style="font-size:0.88rem;color:var(--gray-500);">Original items coded 1 = Enacted. Due to near-zero variance in the count distribution, recoded as binary: 1 = any enforcement activity, 0 = none.</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Item</th><th>ICMA Code</th><th>Survey Question</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Q14a_enct</td><td>Prohibiting the hiring of unauthorized workers by local employers</td></tr>
+        <tr><td>2</td><td>Q14b_enct</td><td>Restricting access to local government services for undocumented residents</td></tr>
+        <tr><td>3</td><td>Q14c_enct</td><td>Collaborating with federal immigration authorities (e.g., 287(g) agreements, ICE detainers)</td></tr>
+        <tr><td>4</td><td>Q14d_enct</td><td>Requiring local law enforcement to verify immigration status during stops or arrests</td></tr>
+        <tr><td>5</td><td>Q14e_enct</td><td>Imposing penalties on landlords who rent to unauthorized immigrants</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── NPO Provider ── -->
+  <h3>Moderator: Perceived NPO's Role</h3>
+  <p>Additive index of 5 items from ICMA Q6 (column 3): "Which sector primarily provides the following services to immigrants in your jurisdiction?" &mdash; coded 1 if nonprofits are the primary provider. Used both as a <strong>direct predictor</strong> (H3a/b/c) and as a <strong>moderator</strong> of policy effects (H4a/b/c).</p>
+  <p style="font-size:0.88rem;color:var(--gray-500);">Range: 0&ndash;5 (M = 3.61, SD = 1.84). Mean-centered for interaction models.</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Item</th><th>ICMA Code</th><th>Service Category</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Q6a3</td><td>Language assistance and translation services</td></tr>
+        <tr><td>2</td><td>Q6b3</td><td>Legal assistance and immigration counseling</td></tr>
+        <tr><td>3</td><td>Q6c3</td><td>Health and social services</td></tr>
+        <tr><td>4</td><td>Q6d3</td><td>Education and workforce training</td></tr>
+        <tr><td>5</td><td>Q6e3</td><td>Housing and community development assistance</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── Controls ── -->
+  <h3>Control Variables</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Variable</th><th>Level</th><th>Source</th><th>Operationalization</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="var-label">ln(Employees)</td><td>NPO</td><td>Form 990</td>
+          <td>Natural log of total employees; captures labor/organizational capacity</td>
+        </tr>
+        <tr>
+          <td class="var-label">ln(Assets)</td><td>NPO</td><td>Form 990</td>
+          <td>Natural log of total assets (bottom-coded at $1 for negative values); captures financial capacity</td>
+        </tr>
+        <tr>
+          <td class="var-label">Region</td><td>County</td><td>ICMA (UREGN)</td>
+          <td>Four U.S. Census regions as dummy variables (Northeast = reference)</td>
+        </tr>
+        <tr>
+          <td class="var-label">ln(Population)</td><td>County</td><td>ACS 2018</td>
+          <td>Natural log of county total population, standardized (z-score)</td>
+        </tr>
+        <tr>
+          <td class="var-label">% Foreign-Born</td><td>County</td><td>ACS 2018</td>
+          <td>Percent foreign-born population, standardized (z-score)</td>
+        </tr>
+        <tr>
+          <td class="var-label">SES Index</td><td>County</td><td>ACS 2018</td>
+          <td>Composite: mean of standardized median income + % college-educated &minus; % poverty. Addresses high intercorrelations (r = 0.70&ndash;0.86) among components.</td>
+        </tr>
+        <tr>
+          <td class="var-label">Dem Vote Share</td><td>County</td><td>2016 Election</td>
+          <td>Democratic presidential vote share (%), standardized (z-score); captures political orientation</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════ 4. DATA & SAMPLE ═══════════════ -->
+<section id="data">
+  <h2><span class="section-num">Section 4</span>Data Collection &amp; Sample Construction</h2>
+  <p class="lead">Three data sources merged at the county level to create a cross-sectional dataset of immigrant-serving nonprofits in ICMA survey counties.</p>
+
+  <h3>Data Sources</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4>Nonprofit Data</h4>
+      <div class="card-title">IRS Form 990 E-filers (2019)</div>
+      <p>2,365 immigration-related nonprofits identified through manual review (ARNOVA classification; 2,382 initial set reduced by 17 EIN-based exclusions during deeper review). Financial data: total contributions, program revenue, government grants, assets, employees.</p>
+    </div>
+    <div class="card">
+      <h4>Policy Data</h4>
+      <div class="card-title">ICMA Local Government Survey (2018)</div>
+      <p>1,201 government responses across 849 unique counties. Measures immigrant support (8 items), economic support (4 items), enforcement activities (5 items), and NPO service provision (5 items).</p>
+    </div>
+    <div class="card">
+      <h4>Demographics</h4>
+      <div class="card-title">ACS &amp; Election Returns</div>
+      <p>County-level controls: population, % foreign-born, median income, education, poverty (SES composite index), and 2016 Democratic vote share.</p>
+    </div>
+  </div>
+
+  <h3>Identifying Immigration-Related Nonprofits</h3>
+  <p>A two-stage process was used to construct the nonprofit sample from the universe of IRS Form 990 E-filers (2019).</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:1.5rem 0;">
+    <div class="card" style="border-left:4px solid var(--accent);">
+      <h4>Stage 1: Keyword Search</h4>
+      <div class="card-title">5,250 candidate organizations</div>
+      <p style="margin-bottom:0.5rem;">A comprehensive keyword search was applied to the <strong>mission statements</strong> (MISSION field) of all Form 990 E-filers, targeting:</p>
+      <p style="font-size:0.85rem;margin-bottom:0.3rem;"><strong>Immigration-related terms:</strong> immigrant, immigration, undocumented, refugee, asylum, DACA, migrant, naturalization, citizenship assistance, ESL, etc.</p>
+      <p style="font-size:0.85rem;margin-bottom:0;"><strong>Ethnicity-related terms:</strong> Mexican, Latino/a, Hispanic, Asian, Haitian, Syrian, Somali, Vietnamese, Chinese, Korean, Arab, etc.</p>
+    </div>
+    <div class="card" style="border-left:4px solid var(--carrot);">
+      <h4>Stage 2: Manual Review</h4>
+      <div class="card-title">2,365 confirmed organizations</div>
+      <p style="margin-bottom:0.5rem;">Two authors independently reviewed all 5,250 candidates to exclude false positives, yielding an initial set of 2,382 organizations. A subsequent deeper review excluded 17 additional EINs found to be inappropriate for the analytic sample, producing the final reviewed sample of <strong>2,365</strong>. <strong>Exclusion criteria:</strong></p>
+      <ul style="font-size:0.85rem;color:var(--gray-700);margin:0;padding-left:1.2rem;">
+        <li>Geographic names mistaken for ethnicity (e.g., "Indiana," "New Mexico")</li>
+        <li>American Indian / Native American organizations</li>
+        <li>Veterans' support groups</li>
+        <li>International charities focused on populations outside the U.S.</li>
+        <li>Anchor institutions (hospitals, museums, universities)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:1.25rem;margin-bottom:1.5rem;">
+    <h4 style="font-size:0.9rem;color:var(--gray-800);margin-bottom:0.75rem;">Organizational Profile of the Initial 2,382 Immigration-Related Nonprofits <span style="font-weight:400;font-size:0.82rem;color:var(--gray-500);">(pre&ndash;deeper-review)</span></h4>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+      <div>
+        <p style="font-size:0.85rem;font-weight:600;color:var(--gray-700);margin-bottom:0.4rem;">NTEE Major Category</p>
+        <table style="font-size:0.82rem;width:100%;">
+          <tbody>
+            <tr><td>Human Services</td><td class="num">920 (38.6%)</td></tr>
+            <tr><td>Arts &amp; Culture</td><td class="num">449 (18.8%)</td></tr>
+            <tr><td>Public &amp; Societal Benefit</td><td class="num">299 (12.6%)</td></tr>
+            <tr><td>Education</td><td class="num">244 (10.2%)</td></tr>
+            <tr><td>Religion</td><td class="num">217 (9.1%)</td></tr>
+            <tr><td>Health</td><td class="num">116 (4.9%)</td></tr>
+            <tr><td>Other</td><td class="num">137 (5.8%)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <p style="font-size:0.85rem;font-weight:600;color:var(--gray-700);margin-bottom:0.4rem;">Financial Profile</p>
+        <table style="font-size:0.82rem;width:100%;">
+          <tbody>
+            <tr><td>Mean Total Revenue</td><td class="num">$2,343,306</td></tr>
+            <tr><td>Median Total Revenue</td><td class="num">$398,894</td></tr>
+            <tr><td>Receiving Contributions</td><td class="num">2,187 (91.8%)</td></tr>
+            <tr><td>Earning Program Revenue</td><td class="num">1,255 (52.7%)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <h3>Sample Construction Pipeline</h3>
+  <div class="pipeline">
+    <div class="pipe-step">
+      <div class="pipe-marker">1</div>
+      <div class="pipe-content">
+        <h4>Manual Review &amp; Classification</h4>
+        <p>5,250 potential immigration-related nonprofits screened through Stage 1 keyword search and Stage 2 author review (ARNOVA exclusion criteria).</p>
+        <span class="pipe-n">N = 2,382 NPOs</span>
+      </div>
+    </div>
+
+    <div class="pipe-step">
+      <div class="pipe-marker">2</div>
+      <div class="pipe-content">
+        <h4>Additional Manual Review Exclusions</h4>
+        <p>A subsequent deeper review excluded 17 EIN-identified organizations found to be inappropriate for the analytic sample (e.g., misclassified mission scope). This matches the manuscript's reviewed sample of 2,365.</p>
+        <span class="pipe-n">N = 2,365 NPOs</span>
+        <div class="pipe-drop">&minus;17 (EIN-based manual exclusions)</div>
+      </div>
+    </div>
+
+    <div class="pipe-step">
+      <div class="pipe-marker">3</div>
+      <div class="pipe-content">
+        <h4>FIPS Validation</h4>
+        <p>Build 5-digit county FIPS codes from state + county FIPS fields. Drop nonprofits with missing geographic identifiers.</p>
+        <span class="pipe-n">N = 2,348 NPOs &middot; 417 counties</span>
+        <div class="pipe-drop">&minus;17 (missing FIPS)</div>
+      </div>
+    </div>
+
+    <div class="pipe-step">
+      <div class="pipe-marker">4</div>
+      <div class="pipe-content">
+        <h4>ICMA County-Level Aggregation</h4>
+        <p>Multiple government responses per county (city, county, township). Aggregation rule: <strong>county-level government response first</strong>; if absent, select the respondent serving the <strong>largest jurisdiction by underage-18 population (U18POPest)</strong>. Produces exactly one policy profile per county.</p>
+        <span class="pipe-n">849 &rarr; 849 counties (1 row each)</span>
+        <div style="font-size:0.85rem;color:var(--gray-700);margin-top:0.3rem;">County-gov used: 453 &middot; U18POPest fallback: 396</div>
+      </div>
+    </div>
+
+    <div class="pipe-step">
+      <div class="pipe-marker">5</div>
+      <div class="pipe-content">
+        <h4>NPO &times; ICMA Inner Join</h4>
+        <p>Match nonprofits to their county's policy environment. Only NPOs in counties with ICMA survey responses are retained.</p>
+        <span class="pipe-n">N = 1,542 NPOs &middot; 224 counties</span>
+        <div class="pipe-drop">&minus;806 (county not in ICMA)</div>
+      </div>
+    </div>
+
+    <div class="pipe-step">
+      <div class="pipe-marker">6</div>
+      <div class="pipe-content">
+        <h4>County Demographics Left Join</h4>
+        <p>Attach ACS demographics and political orientation. Left join preserves all matched NPOs.</p>
+        <span class="pipe-n">N = 1,542 NPOs</span>
+      </div>
+    </div>
+
+    <div class="pipe-step">
+      <div class="pipe-marker">7</div>
+      <div class="pipe-content">
+        <h4>Complete-Case Listwise Deletion</h4>
+        <p>Drop observations with missing values on any analysis variable (IVs, DVs, controls).</p>
+        <span class="pipe-n">N = 1,506 NPOs &middot; 216 counties</span>
+        <div class="pipe-drop">&minus;36 (missing values)</div>
+      </div>
+    </div>
+
+    <div class="pipe-step">
+      <div class="pipe-marker">8</div>
+      <div class="pipe-content">
+        <h4>Cook's Distance Influence Trimming</h4>
+        <p>The largest organization in the sample (a Federally Qualified Health Center in Merced Co., CA) reports total revenue of $211M, with similarly large organizations dominating the upper tail. To prevent high-leverage observations from driving regression estimates, we computed Cook's distance separately for each of the <strong>three OLS baseline models</strong> (one per DV: ln(donations), ln(government grants), ln(program service revenue)) with the full right-hand side, then dropped the <strong>union of observations</strong> exceeding the threshold <strong>4/n</strong> in <em>any</em> of the three models (n = 1,506; threshold &asymp; 0.00266).</p>
+        <ul style="font-size:0.85rem;color:var(--gray-700);margin:0.5rem 0 0.75rem 1.2rem;padding:0;line-height:1.55;">
+          <li>Step 1: Fit plain OLS (no cluster correction) for each DV on N = 1,506.</li>
+          <li>Step 2: Compute Cook's D for every observation in each of the three models.</li>
+          <li>Step 3: Flag observations with Cook's D &gt; 4/n in any single model.</li>
+          <li>Step 4: Drop the union (deduplicated set) of all flagged observations.</li>
+        </ul>
+        <p style="font-size:0.85rem;color:var(--gray-700);margin-bottom:0.5rem;"><em>Why the union (not the intersection)?</em> An observation that is high-leverage for even one revenue stream still threatens the inferences for that stream. Using the union ensures all three models are estimated on the same trimmed sample, so coefficients are directly comparable across DVs.</p>
+        <span class="pipe-n" style="font-size:1rem;">N = 1,287 NPOs &middot; 199 counties</span>
+        <div class="pipe-drop">&minus;219 (high-influence union)</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Geographic Distribution of Sample Counties</h3>
+  <p>224 U.S. counties are matched to the ICMA survey in the merged sample (Pipeline Step 5). Color intensity reflects the number of immigrant-serving nonprofits per county. Hover for details. <em>Note: the final analytic sample &mdash; after listwise deletion and Cook's distance trimming &mdash; contains 1,287 NPOs across 199 counties (see pipeline above).</em></p>
+  <div style="border:1px solid var(--gray-200);border-radius:12px;overflow:hidden;margin:1.5rem 0;">
+    <iframe src="map_county.html" style="width:100%;height:500px;border:none;"></iframe>
+  </div>
+  <div class="stat-row" style="margin-bottom:1.5rem;">
+    <div class="stat-box">
+      <div class="stat-val">104</div>
+      <div class="stat-label">Max NPOs (Los Angeles Co.)</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val">51%</div>
+      <div class="stat-label">Counties with 1&ndash;2 NPOs</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val">40</div>
+      <div class="stat-label">Counties with 10+ NPOs</div>
+    </div>
+  </div>
+
+  <h3>Cluster Structure</h3>
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="stat-val">1,287</div>
+      <div class="stat-label">Nonprofits (Level 1)</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val">199</div>
+      <div class="stat-label">Counties (Level 2)</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val">2</div>
+      <div class="stat-label">Median Cluster Size</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val">36.7%</div>
+      <div class="stat-label">Singleton Counties</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val">6.5</div>
+      <div class="stat-label">Mean Cluster Size</div>
+    </div>
+  </div>
+  <p style="font-size:0.88rem;color:var(--gray-500);">Small, unbalanced clusters (36.7% singletons, median = 2) make traditional multilevel models unreliable. We use <strong>OLS with cluster-robust standard errors</strong> as the primary specification, complemented by two-part hurdle models for the high-zero DVs.</p>
+</section>
+
+<!-- ═══════════════ 4. DESCRIPTIVES ═══════════════ -->
+<section id="descriptives">
+  <h2><span class="section-num">Section 5</span>Descriptive Statistics</h2>
+  <p class="lead">Variable distributions for the analytic sample (N = 1,287 nonprofits in 199 counties).</p>
+
+  <h3>Dependent Variables</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Variable</th><th class="num">N</th><th class="num">Mean ($)</th><th class="num">SD ($)</th><th class="num">Max ($)</th><th class="num">Zero Count</th><th class="num">% Zero</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="var-label">Private Donations</td>
+          <td class="num">1,287</td><td class="num">707,555</td><td class="num">2,289,527</td><td class="num">45,280,863</td>
+          <td class="num">18</td><td class="num">1.4%</td>
+        </tr>
+        <tr>
+          <td class="var-label">Government Grants</td>
+          <td class="num">1,287</td><td class="num">789,149</td><td class="num">6,472,775</td><td class="num">208,867,207</td>
+          <td class="num">733</td><td class="num">57.0%</td>
+        </tr>
+        <tr>
+          <td class="var-label">Program Service Revenue</td>
+          <td class="num">1,287</td><td class="num">813,476</td><td class="num">7,689,251</td><td class="num">168,447,319</td>
+          <td class="num">640</td><td class="num">49.7%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:0.88rem;color:var(--gray-500);">All three DVs are heavily right-skewed. The high zero rates for government grants (57.0%) and program service revenue (49.7%) motivate the two-part hurdle specification. For donations, the participation margin is under-identified after trimming (only 18 zeros), so OLS-CR serves as the primary specification. Log-transformed versions [ln(x+1)] used in regression models.</p>
+
+  <h3>Independent &amp; Control Variables</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Variable</th><th>Level</th><th class="num">Mean</th><th class="num">SD</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr class="row-highlight"><td class="var-label">Immigrant Support (carrot)</td><td>County</td><td class="num">3.91</td><td class="num">2.57</td><td>Index of 8 binary items (0&ndash;8)</td></tr>
+        <tr class="row-highlight"><td class="var-label">Economic Support (carrot)</td><td>County</td><td class="num">0.88</td><td class="num">1.23</td><td>Index of 4 binary items (0&ndash;4)</td></tr>
+        <tr class="row-highlight"><td class="var-label">Enforcement (stick)</td><td>County</td><td class="num">0.51</td><td class="num">0.50</td><td>Binary: any enforcement = 1</td></tr>
+        <tr class="row-highlight"><td class="var-label">Perceived NPO's Role (moderator)</td><td>County</td><td class="num">3.61</td><td class="num">1.84</td><td>Index of 5 items (0&ndash;5)</td></tr>
+        <tr><td class="var-label">Total Employees</td><td>NPO</td><td class="num">29.80</td><td class="num">134.88</td><td>Median = 3; logged in models</td></tr>
+        <tr><td class="var-label">Total Assets ($)</td><td>NPO</td><td class="num">4,257,004</td><td class="num">41,793,963</td><td>Median = $454,931; logged in models</td></tr>
+        <tr><td class="var-label">Total Population</td><td>County</td><td class="num">2,268,475</td><td class="num">2,539,564</td><td>Log-transformed &amp; standardized</td></tr>
+        <tr><td class="var-label">% Foreign-Born</td><td>County</td><td class="num">20.99</td><td class="num">10.42</td><td>Standardized</td></tr>
+        <tr><td class="var-label">SES Index</td><td>County</td><td class="num">0.03</td><td class="num">0.90</td><td>Composite: income + education &minus; poverty</td></tr>
+        <tr><td class="var-label">Dem Vote Share (%)</td><td>County</td><td class="num">61.27</td><td class="num">11.73</td><td>2016 presidential election</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:0.88rem;color:var(--gray-500);">Sample jurisdictions adopted, on average, 3.91 immigrant support services; 51% reported at least one enforcement activity; nonprofits were recognized as primary providers in 3.61 of 5 service categories.</p>
+</section>
+
+<!-- ═══════════════ 5. RESULTS ═══════════════ -->
+<section id="results">
+  <h2><span class="section-num">Section 6</span>Model Results</h2>
+  <p class="lead">Three model specifications applied to each DV: <strong>M1 Baseline</strong> (OLS-CR, tests H1&ndash;H3), <strong>M2 Moderation</strong> (OLS-CR with 3 interaction terms, tests H4), <strong>M3 Two-Part Hurdle</strong> (logit + OLS-CR; for Grants and Prog Rev only).</p>
+
+  <div style="background:var(--accent-light);border:1px solid #bee3f8;border-radius:10px;padding:1.25rem;margin:1rem 0 1.5rem;">
+    <h4 style="font-size:0.92rem;color:var(--accent);margin-bottom:0.6rem;">Note for Tables 2&ndash;4: Identical Right-Hand Side Across All Models</h4>
+    <p style="font-size:0.88rem;margin-bottom:0.6rem;">All three tables (Donations, Government Grants, Program Service Revenue) estimate the <strong>identical right-hand side</strong> across M1, M2, M3a, and M3b. Each model includes:</p>
+    <ul style="font-size:0.88rem;margin:0 0 0.6rem 1.2rem;padding-left:0;line-height:1.55;">
+      <li>Three policy variables: <em>immigrant support</em>, <em>economic support</em>, <em>enforcement (binary)</em></li>
+      <li><em>Perceived NPO's role</em> (mean-centered) &mdash; plus three policy &times; NPO interactions in M2/M3</li>
+      <li>Organization-level controls: <em>ln(employees)</em>, <em>ln(assets)</em></li>
+      <li>Region fixed effects: <em>4 Census regions</em> (Northeast = reference)</li>
+      <li>County-level controls: <em>ln(population, z)</em>, <em>% foreign-born (z)</em>, <em>SES index</em>, <em>Dem vote share (z)</em></li>
+    </ul>
+    <p style="font-size:0.88rem;margin-bottom:0;color:var(--gray-700);">Coefficients displayed below are selected to highlight theoretically focal variables and controls that are <strong>significant for the given DV</strong>. Non-significant county-level controls (notably <strong>SES index</strong>, which is null across all three DVs) and region dummy coefficients are omitted from display rows for brevity but are included in every model.</p>
+  </div>
+
+  <!-- ───── Table 2: PRIVATE DONATIONS ───── -->
+  <h3>Table 2: Private Donations (ln) &mdash; N = 1,287</h3>
+  <p style="font-size:0.88rem;color:var(--gray-500);">After influence-based trimming, only 18 of 1,287 nonprofits report zero donations. The Hurdle Part 1 logistic is therefore under-identified for donations, and OLS-CR baseline is the primary specification.</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th class="num" colspan="2">M1: Baseline</th>
+          <th class="num" colspan="2">M2: Moderation</th>
+        </tr>
+        <tr>
+          <th></th>
+          <th class="num">B</th><th class="num">SE</th>
+          <th class="num">B</th><th class="num">SE</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-highlight"><td class="var-label">Immigrant Support (carrot)</td><td class="num coef-null">0.025</td><td class="num">(0.033)</td><td class="num coef-null">0.022</td><td class="num">(0.032)</td></tr>
+        <tr class="row-highlight"><td class="var-label">Economic Support (carrot)</td><td class="num coef-null">&minus;0.041</td><td class="num">(0.052)</td><td class="num coef-null">&minus;0.034</td><td class="num">(0.053)</td></tr>
+        <tr class="row-highlight"><td class="var-label">Enforcement (stick)</td><td class="num coef-null">&minus;0.023</td><td class="num">(0.116)</td><td class="num coef-null">&minus;0.016</td><td class="num">(0.115)</td></tr>
+        <tr class="row-highlight"><td class="var-label">Perceived NPO's Role</td><td class="num coef-null">0.008</td><td class="num">(0.031)</td><td class="num coef-null">&minus;0.001</td><td class="num">(0.051)</td></tr>
+        <tr><td class="var-label">Immigrant Support &times; NPO</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num coef-null">&minus;0.013</td><td class="num">(0.014)</td></tr>
+        <tr><td class="var-label">Economic Support &times; NPO</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num coef-null">0.004</td><td class="num">(0.032)</td></tr>
+        <tr><td class="var-label">Enforcement &times; NPO</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num coef-null">0.073</td><td class="num">(0.055)</td></tr>
+        <tr><td class="var-label">ln(Employees)</td><td class="num"><span class="sig">0.197***</span></td><td class="num">(0.039)</td><td class="num"><span class="sig">0.196***</span></td><td class="num">(0.039)</td></tr>
+        <tr><td class="var-label">ln(Assets)</td><td class="num"><span class="sig">0.398***</span></td><td class="num">(0.039)</td><td class="num"><span class="sig">0.398***</span></td><td class="num">(0.039)</td></tr>
+        <tr><td class="var-label">% Foreign-Born (z)</td><td class="num"><span class="sig">&minus;0.217**</span></td><td class="num">(0.069)</td><td class="num"><span class="sig">&minus;0.204**</span></td><td class="num">(0.079)</td></tr>
+        <tr><td class="var-label">Dem Vote Share (z)</td><td class="num"><span class="sig">0.152*</span></td><td class="num">(0.066)</td><td class="num"><span class="sig">0.159*</span></td><td class="num">(0.069)</td></tr>
+        <tr style="background:var(--gray-50);font-weight:600;"><td>R&sup2;</td><td class="num" colspan="2">0.229</td><td class="num" colspan="2">0.230</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:0.85rem;color:var(--gray-700);"><strong>Verdict:</strong> H1b (crowding-out), H2b (backlash giving), H3a (NPO &rarr; donations), and H4a (moderation) are all <strong>not supported</strong>. Stakeholder donation responses to local immigration policy environments are not detectable in aggregate revenue.</p>
+
+  <!-- ───── Table 3: GOVERNMENT GRANTS ───── -->
+  <h3>Table 3: Government Grants (ln) &mdash; N = 1,287</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th class="num" colspan="2">M1: Baseline</th>
+          <th class="num" colspan="2">M2: Moderation</th>
+          <th class="num" colspan="2">M3a: Hurdle P1</th>
+          <th class="num" colspan="2">M3b: Hurdle P2</th>
+        </tr>
+        <tr>
+          <th></th>
+          <th class="num">B</th><th class="num">SE</th>
+          <th class="num">B</th><th class="num">SE</th>
+          <th class="num">B</th><th class="num">SE</th>
+          <th class="num">B</th><th class="num">SE</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-highlight"><td class="var-label">Immigrant Support (carrot)</td><td class="num coef-null">0.017</td><td class="num">(0.070)</td><td class="num coef-null">0.036</td><td class="num">(0.070)</td><td class="num coef-null">0.003</td><td class="num">(0.035)</td><td class="num">0.061&dagger;</td><td class="num">(0.035)</td></tr>
+        <tr class="row-highlight"><td class="var-label">Economic Support (carrot)</td><td class="num"><span class="sig">0.314*</span></td><td class="num">(0.134)</td><td class="num">0.346&dagger;</td><td class="num">(0.178)</td><td class="num">0.151&dagger;</td><td class="num">(0.091)</td><td class="num coef-null">0.035</td><td class="num">(0.062)</td></tr>
+        <tr class="row-highlight"><td class="var-label">Enforcement (stick)</td><td class="num coef-null">&minus;0.476</td><td class="num">(0.336)</td><td class="num coef-null">&minus;0.479</td><td class="num">(0.323)</td><td class="num coef-null">&minus;0.238</td><td class="num">(0.161)</td><td class="num coef-null">0.033</td><td class="num">(0.135)</td></tr>
+        <tr class="row-highlight"><td class="var-label">Perceived NPO's Role</td><td class="num coef-null">&minus;0.159</td><td class="num">(0.099)</td><td class="num coef-null">&minus;0.033</td><td class="num">(0.156)</td><td class="num coef-null">&minus;0.039</td><td class="num">(0.075)</td><td class="num coef-null">&minus;0.009</td><td class="num">(0.070)</td></tr>
+        <tr><td class="var-label">Immigrant Support &times; NPO</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num coef-null">0.005</td><td class="num">(0.049)</td><td class="num coef-null">0.009</td><td class="num">(0.024)</td><td class="num coef-null">&minus;0.001</td><td class="num">(0.015)</td></tr>
+        <tr><td class="var-label">Economic Support &times; NPO</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num coef-null">&minus;0.053</td><td class="num">(0.115)</td><td class="num coef-null">&minus;0.007</td><td class="num">(0.057)</td><td class="num"><span class="sig">&minus;0.109**</span></td><td class="num">(0.041)</td></tr>
+        <tr><td class="var-label">Enforcement &times; NPO</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num coef-null">&minus;0.242</td><td class="num">(0.184)</td><td class="num coef-null">&minus;0.106</td><td class="num">(0.090)</td><td class="num coef-null">&minus;0.032</td><td class="num">(0.059)</td></tr>
+        <tr><td class="var-label">ln(Employees)</td><td class="num"><span class="sig">2.377***</span></td><td class="num">(0.096)</td><td class="num"><span class="sig">2.378***</span></td><td class="num">(0.094)</td><td class="num"><span class="sig">0.935***</span></td><td class="num">(0.067)</td><td class="num"><span class="sig">0.680***</span></td><td class="num">(0.063)</td></tr>
+        <tr><td class="var-label">ln(Assets)</td><td class="num"><span class="sig">0.115*</span></td><td class="num">(0.050)</td><td class="num"><span class="sig">0.114*</span></td><td class="num">(0.051)</td><td class="num coef-null">0.042</td><td class="num">(0.034)</td><td class="num"><span class="sig">0.274***</span></td><td class="num">(0.051)</td></tr>
+        <tr><td class="var-label">ln(Population, z)</td><td class="num"><span class="sig">&minus;0.529**</span></td><td class="num">(0.189)</td><td class="num"><span class="sig">&minus;0.454*</span></td><td class="num">(0.195)</td><td class="num">&minus;0.181&dagger;</td><td class="num">(0.107)</td><td class="num coef-null">&minus;0.073</td><td class="num">(0.087)</td></tr>
+        <tr><td class="var-label">Dem Vote Share (z)</td><td class="num coef-null">0.250</td><td class="num">(0.187)</td><td class="num coef-null">0.246</td><td class="num">(0.188)</td><td class="num coef-null">0.134</td><td class="num">(0.096)</td><td class="num coef-null">0.018</td><td class="num">(0.080)</td></tr>
+        <tr style="background:var(--gray-50);font-weight:600;"><td>R&sup2; / Pseudo-R&sup2;</td><td class="num" colspan="2">0.432</td><td class="num" colspan="2">0.434</td><td class="num" colspan="2">0.283</td><td class="num" colspan="2">0.513</td></tr>
+        <tr style="background:var(--gray-50);font-weight:600;"><td>N</td><td class="num" colspan="2">1,287</td><td class="num" colspan="2">1,287</td><td class="num" colspan="2">1,287</td><td class="num" colspan="2">554</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:0.85rem;color:var(--gray-700);"><strong>Verdict:</strong> <strong>H1a is supported</strong> through the economic-support pathway &mdash; one additional economic-support program is associated with ~37% higher grant revenue, concentrated on the extensive margin (Hurdle P1: B = 0.151, p = .095). H2a, H3b are <strong>not supported</strong>. <strong>H4b is supported</strong> in the Hurdle intensive margin: among grant recipients, the boost from economic-support policies is dampened in NPO-heavy counties (Econ × NPO = &minus;0.109, p &lt; .01).</p>
+
+  <!-- ───── Table 4: PROGRAM SERVICE REVENUE ───── -->
+  <h3>Table 4: Program Service Revenue (ln) &mdash; N = 1,287</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th class="num" colspan="2">M1: Baseline</th>
+          <th class="num" colspan="2">M2: Moderation</th>
+          <th class="num" colspan="2">M3a: Hurdle P1</th>
+          <th class="num" colspan="2">M3b: Hurdle P2</th>
+        </tr>
+        <tr>
+          <th></th>
+          <th class="num">B</th><th class="num">SE</th>
+          <th class="num">B</th><th class="num">SE</th>
+          <th class="num">B</th><th class="num">SE</th>
+          <th class="num">B</th><th class="num">SE</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-highlight"><td class="var-label">Immigrant Support (carrot)</td><td class="num coef-null">0.006</td><td class="num">(0.072)</td><td class="num coef-null">0.014</td><td class="num">(0.072)</td><td class="num coef-null">&minus;0.003</td><td class="num">(0.029)</td><td class="num coef-null">0.014</td><td class="num">(0.047)</td></tr>
+        <tr class="row-highlight"><td class="var-label">Economic Support (carrot)</td><td class="num coef-null">0.016</td><td class="num">(0.137)</td><td class="num coef-null">0.115</td><td class="num">(0.150)</td><td class="num coef-null">0.051</td><td class="num">(0.063)</td><td class="num coef-null">0.010</td><td class="num">(0.072)</td></tr>
+        <tr class="row-highlight"><td class="var-label">Enforcement (stick)</td><td class="num coef-null">&minus;0.466</td><td class="num">(0.332)</td><td class="num coef-null">&minus;0.423</td><td class="num">(0.328)</td><td class="num">&minus;0.231&dagger;</td><td class="num">(0.136)</td><td class="num coef-null">0.076</td><td class="num">(0.188)</td></tr>
+        <tr class="row-highlight"><td class="var-label">Perceived NPO's Role</td><td class="num"><span class="sig">&minus;0.198*</span></td><td class="num">(0.087)</td><td class="num coef-null">&minus;0.114</td><td class="num">(0.140)</td><td class="num coef-null">&minus;0.060</td><td class="num">(0.063)</td><td class="num coef-null">0.014</td><td class="num">(0.079)</td></tr>
+        <tr><td class="var-label">Immigrant Support &times; NPO</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num"><span class="sig">&minus;0.071*</span></td><td class="num">(0.035)</td><td class="num">&minus;0.028&dagger;</td><td class="num">(0.015)</td><td class="num coef-null">&minus;0.014</td><td class="num">(0.021)</td></tr>
+        <tr><td class="var-label">Economic Support &times; NPO</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num coef-null">&minus;0.070</td><td class="num">(0.099)</td><td class="num coef-null">&minus;0.010</td><td class="num">(0.042)</td><td class="num coef-null">&minus;0.081</td><td class="num">(0.050)</td></tr>
+        <tr><td class="var-label">Enforcement &times; NPO</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num coef-null">0.174</td><td class="num">(0.158)</td><td class="num coef-null">0.043</td><td class="num">(0.070)</td><td class="num">0.140&dagger;</td><td class="num">(0.084)</td></tr>
+        <tr><td class="var-label">ln(Employees)</td><td class="num"><span class="sig">1.580***</span></td><td class="num">(0.107)</td><td class="num"><span class="sig">1.573***</span></td><td class="num">(0.107)</td><td class="num"><span class="sig">0.541***</span></td><td class="num">(0.056)</td><td class="num"><span class="sig">0.536***</span></td><td class="num">(0.052)</td></tr>
+        <tr><td class="var-label">ln(Assets)</td><td class="num"><span class="sig">0.214***</span></td><td class="num">(0.063)</td><td class="num"><span class="sig">0.216***</span></td><td class="num">(0.064)</td><td class="num"><span class="sig">0.095**</span></td><td class="num">(0.036)</td><td class="num"><span class="sig">0.188***</span></td><td class="num">(0.056)</td></tr>
+        <tr><td class="var-label">Dem Vote Share (z)</td><td class="num"><span class="sig">0.461*</span></td><td class="num">(0.230)</td><td class="num"><span class="sig">0.501*</span></td><td class="num">(0.212)</td><td class="num"><span class="sig">0.272**</span></td><td class="num">(0.097)</td><td class="num coef-null">&minus;0.135</td><td class="num">(0.110)</td></tr>
+        <tr style="background:var(--gray-50);font-weight:600;"><td>R&sup2; / Pseudo-R&sup2;</td><td class="num" colspan="2">0.267</td><td class="num" colspan="2">0.269</td><td class="num" colspan="2">0.153</td><td class="num" colspan="2">0.282</td></tr>
+        <tr style="background:var(--gray-50);font-weight:600;"><td>N</td><td class="num" colspan="2">1,287</td><td class="num" colspan="2">1,287</td><td class="num" colspan="2">1,287</td><td class="num" colspan="2">647</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:0.85rem;color:var(--gray-700);"><strong>Verdict:</strong> <strong>H3c is supported</strong> &mdash; one unit increase in perceived NPO's role is associated with ~18% lower program service revenue, consistent with substitution away from fee-based delivery (Young, 2000). <strong>H4c is supported</strong>: in NPO-heavy counties, broader immigrant-support policies are associated with even lower program revenue (Immigrant Support × NPO = &minus;0.071, p &lt; .05). H1c, H2c are <strong>not supported</strong>.</p>
+
+  <div class="sig-legend">
+    <span><span class="sig">***</span> p &lt; .001</span>
+    <span><span class="sig">**</span> p &lt; .01</span>
+    <span><span class="sig">*</span> p &lt; .05</span>
+    <span>&dagger; p &lt; .10</span>
+  </div>
+  <p style="font-size:0.85rem;color:var(--gray-500);"><em>Note.</em> M1 and M2 use OLS with cluster-robust (CR1) standard errors. M3a is a logistic regression (extensive margin) with cluster-robust SEs; coefficients are on the log-odds scale and not directly comparable to OLS coefficients. M3b is OLS-CR on the subsample of recipients (intensive margin). See the right-hand-side note at the top of this section for the full list of controls.</p>
+
+</section>
+
+<!-- ═══════════════ 7. SUMMARY ═══════════════ -->
+<section id="summary">
+  <h2><span class="section-num">Section 7</span>Summary of Findings</h2>
+  <p class="lead">What do the results tell us about policy signals and nonprofit stakeholder support?</p>
+
+  <h3>Hypothesis Test Results</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Hypothesis</th><th>Prediction</th><th>Evidence</th><th>Verdict</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="var-label">H1a: Carrot &rarr; Gov Grants (+)</td>
+          <td>Supportive policy increases grants</td>
+          <td>Econ Support: 0.314* (M1); 0.151&dagger; (Hurdle P1)</td>
+          <td style="color:var(--carrot);font-weight:600;">Supported</td>
+        </tr>
+        <tr>
+          <td class="var-label">H1b: Carrot &rarr; Donations (&minus;)</td>
+          <td>Crowding-out</td>
+          <td>Both carrot measures null</td>
+          <td style="color:var(--stick);font-weight:600;">Not supported</td>
+        </tr>
+        <tr>
+          <td class="var-label">H1c: Carrot &rarr; Prog Rev (&minus;)</td>
+          <td>Reduced fee demand</td>
+          <td>Null direct effect</td>
+          <td style="color:var(--stick);font-weight:600;">Not supported</td>
+        </tr>
+        <tr>
+          <td class="var-label">H2a: Stick &rarr; Gov Grants (&minus;)</td>
+          <td>Enforcement defunds NPOs</td>
+          <td>Null</td>
+          <td style="color:var(--stick);font-weight:600;">Not supported</td>
+        </tr>
+        <tr>
+          <td class="var-label">H2b: Stick &rarr; Donations (+)</td>
+          <td>Backlash / rage giving</td>
+          <td>Null</td>
+          <td style="color:var(--stick);font-weight:600;">Not supported</td>
+        </tr>
+        <tr>
+          <td class="var-label">H2c: Stick &rarr; Prog Rev (+)</td>
+          <td>Heightened service demand</td>
+          <td>Null direct; marginal negative (opposite) in Hurdle P1</td>
+          <td style="color:var(--stick);font-weight:600;">Not supported</td>
+        </tr>
+        <tr>
+          <td class="var-label">H3a: NPO's Role &rarr; Donations (+)</td>
+          <td>Visible role mobilizes giving</td>
+          <td>B = 0.008 (p = .788)</td>
+          <td style="color:var(--stick);font-weight:600;">Not supported</td>
+        </tr>
+        <tr>
+          <td class="var-label">H3b: NPO's Role &rarr; Gov Grants (+)</td>
+          <td>Provider role opens partnership channel</td>
+          <td>B = &minus;0.159 (p = .108) &mdash; wrong direction, not significant</td>
+          <td style="color:var(--stick);font-weight:600;">Not supported</td>
+        </tr>
+        <tr>
+          <td class="var-label">H3c: NPO's Role &rarr; Prog Rev (&minus;)</td>
+          <td>Substitution of fee-based services</td>
+          <td>B = &minus;0.198* (p = .022)</td>
+          <td style="color:var(--carrot);font-weight:600;">Supported</td>
+        </tr>
+        <tr>
+          <td class="var-label">H4a: NPO's Role &times; Policy &rarr; Donations</td>
+          <td>Amplified policy signals on giving</td>
+          <td>All four donation interactions null</td>
+          <td style="color:var(--stick);font-weight:600;">Not supported</td>
+        </tr>
+        <tr>
+          <td class="var-label">H4b: NPO's Role &times; Policy &rarr; Gov Grants</td>
+          <td>NPO infrastructure conditions policy effects</td>
+          <td>Econ &times; NPO = &minus;0.109** (Hurdle P2 intensive)</td>
+          <td style="color:var(--carrot);font-weight:600;">Supported</td>
+        </tr>
+        <tr>
+          <td class="var-label">H4c: NPO's Role &times; Policy &rarr; Prog Rev</td>
+          <td>NPO infrastructure conditions policy effects</td>
+          <td>Immigrant Support &times; NPO = &minus;0.071* (M2); &minus;0.028&dagger; (Hurdle P1)</td>
+          <td style="color:var(--carrot);font-weight:600;">Supported</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Key Takeaways</h3>
+  <div class="card-grid">
+    <div class="card result-card finding">
+      <h4 style="color:var(--accent);">1. Economic Support Complements, Not Crowds Out, Grants</h4>
+      <p>Counties prioritizing immigrant economic inclusion direct <strong>~37% more grant dollars</strong> per program to immigrant-serving nonprofits. The effect is concentrated on the <strong>extensive margin</strong>: economic-support policies widen access (whether NPOs receive any grants), not the amount per recipient. This stands against the crowding-out narrative in prior work.</p>
+    </div>
+    <div class="card result-card finding">
+      <h4 style="color:var(--accent);">2. NPO Centrality Shifts Revenue Away From Fees</h4>
+      <p>Where nonprofits are recognized as primary providers, program service revenue is <strong>~18% lower</strong> per unit increase. Consistent with the substitution side of Young's (2000) framework: when nonprofits are formalized as service providers, the revenue model shifts away from fees and toward contracted or donated delivery.</p>
+    </div>
+    <div class="card result-card finding">
+      <h4 style="color:var(--accent);">3. NPO's Role Conditions Policy Effects in Two Places</h4>
+      <p><strong>Grants (H4b):</strong> in NPO-heavy counties, the boost from economic-support policies is dampened among recipients (Econ × NPO = &minus;0.109**, intensive margin). <strong>Prog rev (H4c):</strong> in NPO-heavy counties, broader immigrant-support policies are associated with even lower fee revenue (Imm × NPO = &minus;0.071*). The supportive policy environment and the structural NPO role reinforce each other in reshaping the revenue mix.</p>
+    </div>
+    <div class="card result-card null">
+      <h4 style="color:var(--gray-500);">4. Broad Carrot and Stick Measures Are Null</h4>
+      <p>The eight-item immigrant-support index and the binary enforcement measure show no detectable main effects on any revenue stream. Local immigration policies, taken as broad bundles, may lack the salience needed to function as effective signals to nonprofit stakeholders &mdash; the signaling channel works for narrowly targeted instruments more than for diffuse policy bundles.</p>
+    </div>
+  </div>
+
+  <h3>Analytical Approach Note</h3>
+  <p style="font-size:0.9rem;color:var(--gray-700);background:var(--gray-50);padding:1.25rem;border-radius:10px;border:1px solid var(--gray-200);">
+    <strong>Why OLS-CR + Two-Part Hurdle?</strong><br>
+    With 36.7% singleton counties (only 1 NPO) and a median cluster size of 2, traditional multilevel (random-intercept) models cannot reliably estimate county-level variance. OLS with cluster-robust (CR1) standard errors provides valid inference without requiring large within-cluster samples. Two-part hurdle models complement the OLS specification for government grants and program service revenue, which have high zero rates (57.0% and 49.7%) and benefit from separating the participation margin (logit) from the intensity margin (OLS on recipients only). For donations, the 1.4% zero rate after Cook's distance trimming makes the hurdle Part 1 logistic under-identified, so OLS-CR is the primary specification.
+  </p>
+</section>
+
+<!-- ═══════════════ 8. REPLICATION MATERIALS ═══════════════ -->
+<section id="replication">
+  <h2><span class="section-num">Section 8</span>Replication Materials</h2>
+  <p class="lead">The cleaned analytic sample, a self-contained replication script, and a full codebook are provided so readers can reproduce Tables 2&ndash;4 and extend the analysis.</p>
+
+  <div class="card-grid" style="margin-top:1.25rem;">
+    <div class="card" style="border-left:4px solid var(--accent);">
+      <h4>Dataset</h4>
+      <div class="card-title">analytic_sample.csv</div>
+      <p style="margin-bottom:0.75rem;">1,287 nonprofits &times; 34 columns. Final post-trim sample with raw outcomes, log-transformed DVs, all policy variables, the moderator (raw and mean-centered), organization-level controls, and county-level controls in both raw and standardized form.</p>
+      <p style="margin:0;"><a href="replication/analytic_sample.csv" download style="display:inline-block;padding:0.5rem 1rem;background:var(--accent);color:#fff;border-radius:6px;text-decoration:none;font-weight:600;font-size:0.9rem;">&darr; Download CSV (398 KB)</a></p>
+    </div>
+
+    <div class="card" style="border-left:4px solid var(--carrot);">
+      <h4>Replication Script</h4>
+      <div class="card-title">replication.py</div>
+      <p style="margin-bottom:0.75rem;">Self-contained Python script that loads the CSV and reproduces every coefficient in Tables 2 (Donations), 3 (Government Grants), and 4 (Program Service Revenue), including M1 Baseline OLS-CR, M2 Moderation, and the two-part Hurdle (logit + OLS-CR on recipients). Requires <code>pandas</code>, <code>numpy</code>, <code>statsmodels</code>.</p>
+      <p style="margin:0;"><a href="replication/replication.py" download style="display:inline-block;padding:0.5rem 1rem;background:var(--carrot);color:#fff;border-radius:6px;text-decoration:none;font-weight:600;font-size:0.9rem;">&darr; Download .py</a></p>
+    </div>
+
+    <div class="card" style="border-left:4px solid var(--mediator);">
+      <h4>Codebook</h4>
+      <div class="card-title">codebook.md</div>
+      <p style="margin-bottom:0.75rem;">Variable-by-variable definitions, transformations, ranges, and data-source notes. Includes coefficient-interpretation guidance for the <em>z</em>-standardized county controls (per-SD, not per-percentage-point) and licensing/attribution for each source.</p>
+      <p style="margin:0;"><a href="replication/codebook.md" download style="display:inline-block;padding:0.5rem 1rem;background:var(--mediator);color:#fff;border-radius:6px;text-decoration:none;font-weight:600;font-size:0.9rem;">&darr; Download .md</a></p>
+    </div>
+  </div>
+
+  <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:1.25rem;margin-top:1.5rem;">
+    <h4 style="font-size:0.92rem;color:var(--gray-800);margin-bottom:0.6rem;">How to reproduce Tables 2&ndash;4 in 30 seconds</h4>
+    <pre style="background:#1a202c;color:#e2e8f0;padding:0.9rem 1rem;border-radius:6px;font-size:0.82rem;overflow-x:auto;margin:0.5rem 0 0.75rem;line-height:1.55;">pip install pandas numpy statsmodels
+python replication.py</pre>
+    <p style="font-size:0.85rem;color:var(--gray-700);margin:0;">The script prints all coefficients and SEs to stdout and saves <code>replication_output.csv</code> in long format for easy table construction. Expected runtime: &lt; 10 s on a laptop.</p>
+  </div>
+
+  <div style="background:var(--accent-light);border:1px solid #bee3f8;border-radius:10px;padding:1.25rem;margin-top:1.25rem;">
+    <h4 style="font-size:0.92rem;color:var(--accent);margin-bottom:0.6rem;">Data sources &amp; attribution</h4>
+    <ul style="font-size:0.88rem;color:var(--gray-700);margin:0;padding-left:1.2rem;line-height:1.65;">
+      <li><strong>IRS Form 990 e-filers (2019)</strong> &mdash; outcomes, organizational controls. Public domain.</li>
+      <li><strong>ICMA Local Government and Immigrant Communities Survey (2018)</strong> &mdash; policy and moderator variables (county-level derived measures only). Underlying respondent-level survey data is governed by the ICMA Data Licensing Agreement; researchers seeking access to the raw survey must obtain it through ICMA.</li>
+      <li><strong>American Community Survey 5-year estimates (2018)</strong> &mdash; county demographic controls. Public domain.</li>
+      <li><strong>2016 county-level presidential returns</strong> &mdash; Democratic vote share. Public domain.</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>Policy Signals &amp; Nonprofit Revenue &middot; Analysis performed with Python (statsmodels, scipy) &middot; Data: IRS 990 (2019), ICMA Survey (2018), ACS, Election Returns</p>
+</footer>
+
+<!-- ── Smooth nav highlighting ── -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('nav a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const target = document.querySelector(`nav a[href="#${entry.target.id}"]`);
+        if (target) target.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-80px 0px -60% 0px' });
+  sections.forEach(s => observer.observe(s));
+});
+</script>
+
+</body>
+</html>

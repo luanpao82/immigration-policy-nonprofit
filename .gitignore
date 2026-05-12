@@ -1,0 +1,36 @@
+# OS / editor
+.DS_Store
+.Rhistory
+.Rproj.user/
+.idea/
+.vscode/
+*.swp
+
+# Python build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+
+# Manuscript drafts (not for public repo)
+Manuscript_*.docx
+Manuscript_*.md
+Manuscript_*_converted.md
+Introduction and Literature Review.md
+Method and Results_human.docx
+Method and Results_human.md
+Literature Review*.docx
+
+# Raw data (ICMA licensing; raw Form 990 working file)
+immigration nonprofit_2019_selected_ARNOVA.xlsx
+*.xlsx
+*.xls
+
+# Local R script (initial filtering only, references private project)
+03_Immigration nonprofits.R
+
+# Unused diagnostic figures (not referenced in site)
+revenue_distributions.png
+total_revenue_outliers.png
